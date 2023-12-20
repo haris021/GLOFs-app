@@ -17,6 +17,7 @@ mapbox_access_token = "pk.eyJ1IjoiYW1hbnp5MTIzNCIsImEiOiJjbG9land0NjcwazR6MmtvMj
 px.set_mapbox_access_token(mapbox_access_token)
 
 st. set_page_config(layout="wide")
+st.title("HiRISK High Mountain Asia")
 df_avalanches = pd.read_csv("HiAVALDB.csv", encoding = "latin1")
 df_avalanches = df_avalanches.drop(["Unnamed: 0"], axis=1)
 
@@ -33,7 +34,7 @@ def get_gj():
 def convert_df(df):
     return df.to_csv(index=False).encode('utf-8')
 
-event_checkbox = st.selectbox("Select event", ["Avalanches","GLOF"])
+event_checkbox = st.selectbox("Select Hazard Type", ["Avalanches","GLOF"])
 st.divider()
 
 
@@ -251,3 +252,13 @@ elif(event_checkbox == "Avalanches"):
 else:
     pass
 
+    # Provide references
+st.subheader("Data References")
+st.markdown(
+"""
+1.https://github.com/fidelsteiner/HMAGLOFDB
+
+2.https://github.com/fidelsteiner/HiAVAL
+"""
+)
+st.text("")

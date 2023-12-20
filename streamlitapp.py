@@ -34,7 +34,7 @@ def get_gj():
 def convert_df(df):
     return df.to_csv(index=False).encode('utf-8')
 
-event_checkbox = col1.selectbox("Select Hazard Type", ["Avalanches","GLOF"])
+event_checkbox = st.sidebar.selectbox("Select Hazard Type", ["Avalanches","GLOF"])
 st.divider()
 
 

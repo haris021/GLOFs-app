@@ -34,7 +34,7 @@ def get_gj():
 def convert_df(df):
     return df.to_csv(index=False).encode('utf-8')
 
-
+event_checkbox = st.selectbox("Select Hazard Type", ["Avalanches","GLOF"])
 st.divider()
 
 
@@ -47,7 +47,7 @@ if(event_checkbox == "GLOF"):
         col1, col2, col3 = st.columns([0.2, 0.5,0.3])
     
     # Filter by country 
-    event_checkbox = col1.selectbox("Select Hazard Type", ["Avalanches","GLOF"])
+    
     country = col1.selectbox("Select country", sorted(df['Country'].drop_duplicates().tolist()))
     df = df.loc[(df["Country"]  == country)]
     col1.divider()

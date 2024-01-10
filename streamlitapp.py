@@ -159,12 +159,12 @@ if(event_checkbox == "GLOF"):
 elif(event_checkbox == "Avalanches"):
     df = df_avalanches.copy()
     with st.container():
-        col1, col2, col3 = st.columns([0.2, 0.5,0.3])
+        col2, col3 = st.columns([0.7,0.3])
 
 
 
-    country = col1.selectbox("Select country", sorted(df['Country'].drop_duplicates().tolist()))
-    col1.divider()
+    country = st.sidebar.selectbox("Select country", sorted(df['Country'].drop_duplicates().tolist()))
+    st.sidebar.divider()
     df = df.loc[(df["Country"]  == country)]
 
     col_1, col_2, col_3= col2.columns([0.33, 0.33, 0.33])

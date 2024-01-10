@@ -44,7 +44,7 @@ if(event_checkbox == "GLOF"):
     df = df_glofs.copy()
 
     with st.container():
-        col1, col2, col3 = st.columns([0.2, 0.5,0.3])
+        col2, col3 = st.columns([0.7,0.3])
     
     # Filter by country 
     

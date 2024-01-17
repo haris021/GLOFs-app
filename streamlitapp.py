@@ -159,7 +159,7 @@ if(event_checkbox == "GLOF"):
 elif(event_checkbox == "Avalanches"):
     df = df_avalanches.copy()
     with st.container():
-        col2, col3 = st.columns([0.7,0.3])
+        col2, col3 = st.columns([0.6,0.4])
 
 
 

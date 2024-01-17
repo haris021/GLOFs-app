@@ -226,13 +226,15 @@ elif(event_checkbox == "Avalanches"):
         col2.map()
 
 
-    df["Year"] = df["Year"].astype(str)
+    # st.write(df)
+    # df["Year"] = df["Year"].astype(str)
+    df = df.rename(columns = {"Type": "Avalanche Type"})
+    df["Avalanche Type"] = df["Avalanche Type"].astype(str).map(lambda str: str.replace(" avalanche", ""))
+    plot_df = df.loc[~(df["Avalanche Type"] == "nan")]
+    fig2 = px.bar(plot_df.groupby("Avalanche Type").sum(), y = "Fatalities", height = 720)
     
-
-
-    fig2 = px.bar(df.groupby("Type").sum(), y = "Fatalities", height = 700,)
+    
     fig2.update_traces(width=0.2)
-    # fig2.update_yaxes(title='', visible=True, showticklabels=True,title_font=dict(size=12))
     fig2.update_layout(margin=dict(r = 0), title="Fatalities by Avalanche Type")
     col3.plotly_chart(fig2, theme= None, use_container_width=True)
 

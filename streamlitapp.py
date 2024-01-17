@@ -18,6 +18,7 @@ px.set_mapbox_access_token(mapbox_access_token)
 
 st. set_page_config(layout="wide")
 st.title("High Mountain Hazard Data")
+st.divider()
 df_avalanches = pd.read_csv("HiAVALDB.csv", encoding = "latin1")
 df_avalanches = df_avalanches.drop(["Unnamed: 0"], axis=1)
 
@@ -51,7 +52,6 @@ if(event_checkbox == "GLOF"):
     country = st.sidebar.selectbox("Select country", sorted(df['Country'].drop_duplicates().tolist()))
     df = df.loc[(df["Country"]  == country)]
     st.sidebar.divider()
-
 
 
     # # # Filter by river basin 
@@ -128,14 +128,17 @@ if(event_checkbox == "GLOF"):
 
     # Make a pie chart for the mechanism 
     pie_df = df["Mechanism"].value_counts().reset_index()
+    pie_df = pie_df.rename(columns = {"index": "Mechanisms", "Mechanism": "count"})
 
-    fig2 = px.pie(pie_df, names = "Mechanism", values = "count", title="Mechanisms of lake breach", height = 320)
+
+    fig2 = px.pie(pie_df, names = "Mechanisms", values = "count", title="Mechanisms of lake breach", height = 320)
     fig2.update_layout(margin = dict( b=0))
     col3.plotly_chart(fig2, use_container_width=True)
 
     bar_df = df["Lake_type"].value_counts().reset_index()
+    bar_df = bar_df.rename(columns = {"index": "type", "Lake_type": "count"})
 
-    fig3 = px.bar(bar_df, y = 'count', x = 'Lake_type', height = 400, title = "Types of Lakes")
+    fig3 = px.bar(bar_df, y = 'count', x = 'type', height = 400, title = "Types of Lakes")
     fig3.update_traces(width=0.2)
     fig3.update_xaxes(title='')
     col3.plotly_chart(fig3, use_container_width=True)
@@ -159,7 +162,7 @@ if(event_checkbox == "GLOF"):
 elif(event_checkbox == "Avalanches"):
     df = df_avalanches.copy()
     with st.container():
-        col2, col3 = st.columns([0.7,0.3])
+        col2, col3 = st.columns([0.6,0.4])
 
 
 
@@ -225,14 +228,15 @@ elif(event_checkbox == "Avalanches"):
     else: 
         col2.map()
 
-
-    df["Year"] = df["Year"].astype(str)
+    # st.write(df)
+    # df["Year"] = df["Year"].astype(str)
+    df = df.rename(columns = {"Type": "Avalanche Type"})
+    df["Avalanche Type"] = df["Avalanche Type"].astype(str).map(lambda str: str.replace(" avalanche", ""))
+    plot_df = df.loc[~(df["Avalanche Type"] == "nan")]
+    fig2 = px.bar(plot_df.groupby("Avalanche Type").sum(), y = "Fatalities", height = 720)
     
-
-
-    fig2 = px.bar(df.groupby("Type").sum(), y = "Fatalities", height = 700,)
+    
     fig2.update_traces(width=0.2)
-    # fig2.update_yaxes(title='', visible=True, showticklabels=True,title_font=dict(size=12))
     fig2.update_layout(margin=dict(r = 0), title="Fatalities by Avalanche Type")
     col3.plotly_chart(fig2, theme= None, use_container_width=True)
 
@@ -244,11 +248,11 @@ elif(event_checkbox == "Avalanches"):
 
     csv = convert_df(df)
     st.download_button(
-    "Download Data",
-    csv,
-    f"Filtered Glacier Data.csv",
-    "text/csv",
-    key='download-csv'
+            "Download Data",
+            csv,
+            f"Filtered Glacier Data.csv",
+            "text/csv",
+            key='download-csv'
     )
             
 else:

@@ -248,7 +248,7 @@ elif(event_checkbox == "Avalanches"):
     st.download_button(
     "Download Data",
     csv,
-    f"Filtered Glacier Data.csv",
+    f"Data.csv",
     "text/csv",
     key='download-csv'
     )

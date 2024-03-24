@@ -22,7 +22,7 @@ st.divider()
 df_avalanches = pd.read_csv("HiAVALDB.csv", encoding = "latin1")
 df_avalanches = df_avalanches.drop(["Unnamed: 0"], axis=1)
 
-df_glofs = pd.read_csv("HMAGLOFDB (2).csv", encoding = "latin1")
+df_glofs = pd.read_csv("HIMAP_boundaries/HMAGLOFDB (2).csv", encoding = "latin1")
 
 @st.cache_resource
 def get_gj(): 

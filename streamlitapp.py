@@ -51,8 +51,11 @@ if(event_checkbox == "GLOF"):
     
     # Filter by country 
     
-    country = st.sidebar.selectbox("Select country", sorted(df['Country'].drop_duplicates().tolist()))
-    df = df.loc[(df["Country"]  == country)]
+    country = st.sidebar.selectbox("Select country", ["All"] + sorted(df['Country'].drop_duplicates().tolist()))
+    
+    if country!= "All":
+        df = df.loc[(df["Country"]  == country)]
+
     st.sidebar.divider()
 
 
@@ -165,9 +168,10 @@ elif(event_checkbox == "Avalanches"):
 
 
 
-    country = st.sidebar.selectbox("Select country", sorted(df['Country'].drop_duplicates().tolist()))
+    country = st.sidebar.selectbox("Select country", ["All"]+sorted(df['Country'].drop_duplicates().tolist()))
     st.sidebar.divider()
-    df = df.loc[(df["Country"]  == country)]
+    if country!= "All":
+        df = df.loc[(df["Country"]  == country)]
 
     col_1, col_2, col_3= col2.columns([0.33, 0.33, 0.33])
     col_1.write("Total Fatalities: " + str(df["Fatalities"].sum()))

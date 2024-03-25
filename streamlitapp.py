@@ -23,6 +23,8 @@ df_avalanches = pd.read_csv("HiAVALDB.csv", encoding = "latin1")
 df_avalanches = df_avalanches.drop(["Unnamed: 0"], axis=1)
 
 df_glofs = pd.read_csv("HIMAP_boundaries/HMAGLOFDB (2).csv", encoding = "latin1")
+df_debris_flow = pd.read_csv("debrisflowshkh.csv", encoding = "latin1")
+df_ice_rock_aval = pd.read_csv("icerock_avalanches_zhang2024.csv", encoding = "latin1")
 
 @st.cache_resource
 def get_gj(): 
@@ -35,7 +37,7 @@ def get_gj():
 def convert_df(df):
     return df.to_csv(index=False).encode('utf-8')
 
-event_checkbox = st.sidebar.selectbox("Select Hazard Type", ["Avalanches","GLOF"])
+event_checkbox = st.sidebar.selectbox("Select Hazard Type", ["Avalanches", "Ice/Rock Avalanches","GLOF", "Debris Flow"])
 st.sidebar.divider()
 
 
@@ -252,7 +254,174 @@ elif(event_checkbox == "Avalanches"):
     "text/csv",
     key='download-csv'
     )
+elif(event_checkbox == "Debris Flow"):
+    df = df_debris_flow.copy()
+    df = df.loc[~(df["Country"].isna())]
+
+    
+    # with st.container():
+    #     col2, col3 = st.columns([0.6,0.4])
+
+
+
+    country = st.sidebar.selectbox("Select country", ["All"] + sorted(df['Country'].astype(str).drop_duplicates().dropna().tolist()))
+    st.sidebar.divider()
+    if country!= "All":
+        df = df.loc[(df["Country"]  == country)]
+
+    st.write(f"Total Incidents: {df.shape[0]}")
+
+
+    plot_df = df.loc[~(df["Lat_impact"].isna()) & ~(df["Lon_impact"].isna())]
+    # plot_df["Remarks"] = plot_df["Remarks"].replace(np.nan, "")
+    plot_df= plot_df.replace(np.nan , "")
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scattermapbox(
+            lat=plot_df["Lat_impact"],
+            lon=plot_df["Lon_impact"],
+            mode = "markers",
+            marker=go.scattermapbox.Marker(
+                size=14,
+                color='rgb(255, 0, 0)',
+                opacity=0.7, 
+            ),
+            # text=df["Remarks"].fillna("").apply(modify),
+            # textposition = "bottom right",
             
+            customdata=plot_df[["Year_approx", "Elev_impact","Impact_type","Country", "Province", "River_Basin", "Trigger", "Cascading_effects"]],
+            hovertemplate="%{lon}, %{lat}<br>Time Period: %{customdata[0]}<br><br>Elevation Impact: %{customdata[1]}<br>Impact Type: %{customdata[2]}<br><br>Trigger: %{customdata[6]}<br>Cascading Effects: %{customdata[7]}<extra>Country: %{customdata[5]}<br>Province: %{customdata[4]}<br>River Basin: %{customdata[5]}</extra>",
+        ))
+    fig.update_layout(mapbox_layers=[{
+                "below": 'traces',
+                "sourcetype": "geojson",
+                "type": "line",
+                "color": "black",
+                "source": get_gj()
+            }])
+
+    fig.update_layout(
+        autosize=True,
+        hovermode='closest',
+        showlegend=False,
+        mapbox=dict(
+            accesstoken=mapbox_access_token,
+            bearing=0,
+            center=dict(
+                lat=36,
+                lon=85
+            ),
+            pitch=0,
+            zoom=3.8,
+            style='light'
+        ),
+            height = 650, 
+            margin=dict(l=0,r=0,b=0,t=0)
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+    st.dataframe(df, use_container_width=True)
+
+    csv = convert_df(df)
+    st.download_button(
+            "Download Data",
+            csv,
+            f"Filtered Debris Flow Data.csv",
+            "text/csv",
+            key='download-csv'
+            )
+
+elif(event_checkbox=="Ice/Rock Avalanches"):
+    df = df_ice_rock_aval.copy()
+    df = df.loc[~(df["Country"].isna())]
+
+    
+    with st.container():
+        col2, col3 = st.columns([0.6,0.4])
+
+
+
+    country = st.sidebar.selectbox("Select country", ["All"] + sorted(df['Country'].astype(str).drop_duplicates().dropna().tolist()))
+    st.sidebar.divider()
+    if country!= "All":
+        df = df.loc[(df["Country"]  == country)]
+
+    col2.write(f"Total Incidents: {df.shape[0]}")
+
+
+    plot_df = df.loc[~(df["Longitude (E)"].isna()) & ~(df["Latitude (N)"].isna())]
+    # plot_df["Remarks"] = plot_df["Remarks"].replace(np.nan, "")
+    plot_df= plot_df.replace(np.nan , "")
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scattermapbox(
+            lat=plot_df["Latitude (N)"],
+            lon=plot_df["Longitude (E)"],
+            mode = "markers",
+            marker=go.scattermapbox.Marker(
+                size=14,
+                color='rgb(255, 0, 0)',
+                opacity=0.7, 
+            ),
+            customdata=plot_df[["Approximate_Date", "Location","Hazard types","Cascading processes", "Country", "Region", "Trigger", "Damage"]],
+            hovertemplate="%{lon}, %{lat}<br>Time Period: %{customdata[0]}<br><br>Hazard Type: %{customdata[2]}<br>Cascading processes: %{customdata[3]}<br><br>Trigger: %{customdata[6]}<br>Damage: %{customdata[7]}<extra>Country: %{customdata[4]}<br>Location: %{customdata[1]}<br>Region: %{customdata[5]}</extra>",
+        ))
+    fig.update_layout(mapbox_layers=[{
+                "below": 'traces',
+                "sourcetype": "geojson",
+                "type": "line",
+                "color": "black",
+                "source": get_gj()
+            }])
+
+    fig.update_layout(
+        autosize=True,
+        hovermode='closest',
+        showlegend=False,
+        mapbox=dict(
+            accesstoken=mapbox_access_token,
+            bearing=0,
+            center=dict(
+                lat=36,
+                lon=85
+            ),
+            pitch=0,
+            zoom=3.8,
+            style='light'
+        ),
+            height = 650, 
+            margin=dict(l=0,r=0,b=0,t=0)
+    )
+    col2.plotly_chart(fig, use_container_width=True)
+
+
+
+
+    
+
+    col2.divider()
+
+
+    plot_df = df.rename(columns = {"Hazard types": "Type"})
+    plot_df["Type"] = plot_df["Type"].astype(str).map(lambda str: str.replace(" avalanche", ""))
+    plot_df = plot_df.loc[~(plot_df["Type"] == "nan")]
+    fig2 = px.bar(plot_df.groupby("Type").sum(), y = "Casualty", height = 720)
+    
+    
+    fig2.update_traces(width=0.2)
+    fig2.update_layout(margin=dict(r = 0), title="Fatalities by Avalanche Type")
+    col3.plotly_chart(fig2, theme= None, use_container_width=True)
+    st.dataframe(df, use_container_width=True)
+
+    csv = convert_df(df)
+    st.download_button(
+            "Download Data",
+            csv,
+            f"Filtered Debris Flow Data.csv",
+            "text/csv",
+            key='download-csv'
+            )
 else:
     pass
 

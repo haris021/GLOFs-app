@@ -22,7 +22,7 @@ st.divider()
 df_avalanches = pd.read_csv("HiAVALDB.csv", encoding = "latin1")
 df_avalanches = df_avalanches.drop(["Unnamed: 0"], axis=1)
 
-df_glofs = pd.read_csv("Hazards_dashboard/HIMAP_boundaries/HMAGLOFDB (2).csv", encoding = "latin1")
+df_glofs = pd.read_csv("Hazards_dashboard/HMAGLOFDB (2).csv", encoding = "latin1")
 df_debris_flow = pd.read_csv("debrisflowshkh.csv", encoding = "latin1")
 df_ice_rock_aval = pd.read_csv("icerock_avalanches_zhang2024.csv", encoding = "latin1")
 

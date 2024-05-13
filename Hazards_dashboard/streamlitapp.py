@@ -428,7 +428,8 @@ elif(event_checkbox=="Ice/Rock Avalanches"):
             )
 else:
     pass
-
+st.sidebar.image("logo_hirisk.png")
+st.sidebar.markdown("https://hirisk.org/")
     # Provide references
 st.subheader("Data References")
 st.markdown(
